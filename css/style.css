@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;900&display=swap');
+
+:root {
+  --Cyan-600: #4D96A9;
+  --Cyan-300: #8FE3F9;
+  --Purple-600: #855FB1;
+  --Purple-300: #D9B8FF;
+  --Slate-900: #28283D;
+  --Slate-600: #87879D;
+  --Slate-300: #D1D1DF;
+
+  --white-color: #FAFAFA;
+
+  --font-body: "Red Hat Display", sans-serif;
+
+  /* 작성 규칙: font-weight | font-size/line-height | font-family */
+  --text-preset-1: 900 64px/1.1 var(--font-body);
+  --text-preset-2: 900 40px/1.1 var(--font-body);
+  --text-preset-3: 500 18px/1.1 var(--font-body);
+  --text-preset-4: 900 16px/1.5 var(--font-body);
+
+}
