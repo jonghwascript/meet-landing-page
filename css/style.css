@@ -134,6 +134,11 @@ header {
   background: var(--Cyan-600);
   color: var(--white-color);
   font: var(--text-mobile-preset-5);
+  transition: background-color 0.2s ease;
+}
+
+.download:hover {
+  background-color: color-mix(in srgb, var(--Cyan-600) 85%, black);
 }
 
 .download span {
@@ -148,6 +153,11 @@ header {
   background: var(--Purple-600);
   color: var(--white-color);
   font: var(--text-mobile-preset-5);
+  transition: background-color 0.2s ease;
+}
+
+.secondary-action:hover {
+  background-color: color-mix(in srgb, var(--Purple-600) 85%, black);
 }
 
 .divider {
@@ -284,6 +294,10 @@ header {
   margin: 24px auto 0;
 }
 
+.footer__download:hover {
+  background-color: color-mix(in srgb, var(--Purple-600) 85%, black);
+}
+
 .footer__download span {
   color: var(--Purple-300);
 }
@@ -400,8 +414,10 @@ header {
   .hero__left,
   .hero__right {
     display: block;
-    width: 394px;
-    height: 303px;
+    width: 100%;
+    max-width: 394px;
+    height: auto;
+    aspect-ratio: 394 / 303;
   }
 
   .hero__media {
