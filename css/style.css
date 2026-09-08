@@ -127,18 +127,15 @@ header {
 }
 
 .download {
+  --btn-bg: var(--Cyan-600);
   width: 193px;
   border-radius: 29px;
   display: block;
   padding: 1rem 2.5rem;
-  background: var(--Cyan-600);
+  background: var(--btn-bg);
   color: var(--white-color);
   font: var(--text-mobile-preset-5);
   transition: background-color 0.2s ease;
-}
-
-.download:hover {
-  background-color: color-mix(in srgb, var(--Cyan-600) 85%, black);
 }
 
 .download span {
@@ -146,18 +143,15 @@ header {
 }
 
 .secondary-action {
+  --btn-bg: var(--Purple-600);
   width: 161px;
   border-radius: 29px;
   display: block;
   padding: 1rem 2.5rem;
-  background: var(--Purple-600);
+  background: var(--btn-bg);
   color: var(--white-color);
   font: var(--text-mobile-preset-5);
   transition: background-color 0.2s ease;
-}
-
-.secondary-action:hover {
-  background-color: color-mix(in srgb, var(--Purple-600) 85%, black);
 }
 
 .divider {
@@ -289,13 +283,16 @@ header {
 }
 
 .footer__download {
+  --btn-bg: var(--Purple-600);
   text-align: center;
-  background-color: var(--Purple-600);
+  background-color: var(--btn-bg);
   margin: 1.5rem auto 0;
 }
 
+.download:hover,
+.secondary-action:hover,
 .footer__download:hover {
-  background-color: color-mix(in srgb, var(--Purple-600) 85%, black);
+  background-color: color-mix(in srgb, var(--btn-bg) 85%, black);
 }
 
 .footer__download span {
