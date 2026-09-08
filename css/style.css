@@ -16,21 +16,21 @@
   --font-body: "Red Hat Display", sans-serif;
 
   /* 작성 규칙: font-weight | font-size/line-height | font-family */
-  --text-mobile-preset-1: 900 47px/1.1 var(--font-body);
-  --text-mobile-preset-2: 900 32px/1.1 var(--font-body);
-  --text-mobile-preset-3: 900 12px/1.1 var(--font-body);
-  --text-mobile-preset-4: 500 16px/1.5 var(--font-body);
-  --text-mobile-preset-5: 900 16px/1.5 var(--font-body);
+  --text-mobile-preset-1: 900 2.9375rem/1.1 var(--font-body);
+  --text-mobile-preset-2: 900 2rem/1.1 var(--font-body);
+  --text-mobile-preset-3: 900 0.75rem/1.1 var(--font-body);
+  --text-mobile-preset-4: 500 1rem/1.5 var(--font-body);
+  --text-mobile-preset-5: 900 1rem/1.5 var(--font-body);
 
-  --text-tablet-preset-1: 900 48px/1.1 var(--font-body);
-  --text-tablet-preset-2: 900 36px/1.1 var(--font-body);
-  --text-tablet-preset-3: 900 14px/1.1 var(--font-body);
-  --text-tablet-preset-4: 500 16px/1.5 var(--font-body);
+  --text-tablet-preset-1: 900 3rem/1.1 var(--font-body);
+  --text-tablet-preset-2: 900 2.25rem/1.1 var(--font-body);
+  --text-tablet-preset-3: 900 0.875rem/1.1 var(--font-body);
+  --text-tablet-preset-4: 500 1rem/1.5 var(--font-body);
 
-  --text-desktop-preset-1: 900 64px/1.1 var(--font-body);
-  --text-desktop-preset-2: 900 40px/1.1 var(--font-body);
-  --text-desktop-preset-3: 900 16px/1.1 var(--font-body);
-  --text-desktop-preset-4: 500 18px/1.5 var(--font-body);
+  --text-desktop-preset-1: 900 4rem/1.1 var(--font-body);
+  --text-desktop-preset-2: 900 2.5rem/1.1 var(--font-body);
+  --text-desktop-preset-3: 900 1rem/1.1 var(--font-body);
+  --text-desktop-preset-4: 500 1.125rem/1.5 var(--font-body);
 
 }
 
@@ -64,7 +64,7 @@ header {
   flex-direction: column;
   align-items: center;
 
-  padding: 64px 32px 32px 32px;
+  padding: 4rem 2rem 2rem 2rem;
 }
 
 .hero {
@@ -75,9 +75,9 @@ header {
     "text text"
   ;
 
-  column-gap: 16.9px;
-  row-gap: 48px;
-  padding-bottom: 32px;
+  column-gap: 1.05625rem;
+  row-gap: 3rem;
+  padding-bottom: 2rem;
 }
 
 .hero__left {
@@ -112,25 +112,25 @@ header {
 }
 
 .hero__text-desc {
-  margin-block-start: 24px;
+  margin-block-start: 1.5rem;
   font: var(--text-mobile-preset-4);
   color: var(--Slate-600);
   text-align: center;
 }
 
 .hero__text-button {
-  margin-block-start: 24px;
+  margin-block-start: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .download {
   width: 193px;
   border-radius: 29px;
   display: block;
-  padding: 16px 40px;
+  padding: 1rem 2.5rem;
   background: var(--Cyan-600);
   color: var(--white-color);
   font: var(--text-mobile-preset-5);
@@ -149,7 +149,7 @@ header {
   width: 161px;
   border-radius: 29px;
   display: block;
-  padding: 16px 40px;
+  padding: 1rem 2.5rem;
   background: var(--Purple-600);
   color: var(--white-color);
   font: var(--text-mobile-preset-5);
@@ -190,12 +190,12 @@ header {
 }
 
 .divider--one {
-  margin-block-start: 32px;
-  margin-block-end: 64px;
+  margin-block-start: 2rem;
+  margin-block-end: 4rem;
 }
 
 .content {
-  padding-bottom: 64px;
+  padding-bottom: 4rem;
 }
 
 .content__media {
@@ -203,7 +203,7 @@ header {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .content__media img {
@@ -212,11 +212,11 @@ header {
   aspect-ratio: 510 / 484;
   object-fit: cover;
   border-radius: 5px;
-  flex-basis: calc(50% - 16px);
+  flex-basis: calc(50% - 1rem);
 }
 
 .content__body {
-  margin-block-start: 64px;
+  margin-block-start: 4rem;
 }
 
 .content__eyebrow {
@@ -228,14 +228,14 @@ header {
 }
 
 .content__title {
-  margin-block-start: 16px;
+  margin-block-start: 1rem;
   text-align: center;
   font: var(--text-mobile-preset-2);
   color: var(--Slate-900);
 }
 
 .content__desc {
-  margin-block-start: 32px;
+  margin-block-start: 2rem;
   text-align: center;
   font: var(--text-mobile-preset-4);
   color: var(--Slate-600);
@@ -265,14 +265,14 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-block-start: 108px;
-  padding-block-end: 64px;
+  margin-block-start: 6.75rem;
+  padding-block-end: 4rem;
 
   border-top: 1px solid #000;
 }
 
 .footer__wrapper {
-  margin-block-start: 64px;
+  margin-block-start: 4rem;
 }
 
 .footer__title {
@@ -282,7 +282,7 @@ header {
 }
 
 .footer__message {
-  margin-block-start: 24px;
+  margin-block-start: 1.5rem;
   font: var(--text-mobile-preset-4);
   text-align: center;
   color: #fff;
@@ -291,7 +291,7 @@ header {
 .footer__download {
   text-align: center;
   background-color: var(--Purple-600);
-  margin: 24px auto 0;
+  margin: 1.5rem auto 0;
 }
 
 .footer__download:hover {
@@ -318,9 +318,9 @@ header {
       "media media"
       "text text"
     ;
-    column-gap: 32px;
-    row-gap: 72px;
-    padding-bottom: 64px;
+    column-gap: 2rem;
+    row-gap: 4.5rem;
+    padding-bottom: 4rem;
   }
 
   .hero__left,
@@ -407,8 +407,8 @@ header {
     grid-template-areas:
       "left text right"
     ;
-    column-gap: 32px;
-    padding-bottom: 64px;
+    column-gap: 2rem;
+    padding-bottom: 4rem;
   }
 
   .hero__left,
@@ -456,7 +456,7 @@ header {
   }
 
   .footer__wrapper {
-    margin-block-start: 112px;
+    margin-block-start: 7rem;
     width: min(1120px, 100%);
     display: flex;
     align-items: flex-start;
@@ -474,8 +474,8 @@ header {
   }
 
   .footer__message {
-    margin-inline-start: 32px;
-    margin-inline-end: 32px;
+    margin-inline-start: 2rem;
+    margin-inline-end: 2rem;
     margin-top: 0;
     flex-basis: min(335px, 100%);
     text-align: left;
