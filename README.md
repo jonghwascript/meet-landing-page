@@ -1,101 +1,123 @@
-# Frontend Mentor - Meet landing page
+# Frontend Mentor - Meet landing page solution
 
-![Design preview for the Meet landing page coding challenge](./preview.jpg)
+This is a solution to the [Meet landing page challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/meet-landing-page-rbTDS6OUR). Frontend Mentor challenges help you improve your coding skills by building realistic projects.
 
-## Welcome! 👋
+## Table of contents
 
-Thanks for purchasing this premium Frontend Mentor coding challenge.
+- [Overview](#overview)
+  - [The challenge](#the-challenge)
+  - [Screenshot](#screenshot)
+  - [Links](#links)
+- [My process](#my-process)
+  - [Built with](#built-with)
+  - [What I learned](#what-i-learned)
+  - [Continued development](#continued-development)
+  - [Useful resources](#useful-resources)
+  - [AI Collaboration](#ai-collaboration)
+- [Author](#author)
 
-[Frontend Mentor](https://www.frontendmentor.io) challenges help you improve your coding skills by building realistic projects. These premium challenges are perfect portfolio pieces, so please feel free to use what you create in your portfolio to show others.
+## Overview
 
-**To do this challenge, you need a decent understanding of HTML & CSS.**
+### The challenge
 
-## The challenge
-
-Your challenge is to build out this landing page and get it looking as close to the design as possible.
-
-You can use any tools you like to help you complete the challenge. So if you've got something you'd like to practice, feel free to give it a go.
-
-Your users should be able to:
+Users should be able to:
 
 - View the optimal layout depending on their device's screen size
 - See hover states for interactive elements
 
-### Want some support on the challenge?
+### Screenshot
 
-[Join our community](https://www.frontendmentor.io/community) and ask questions in the **#help** channel.
+![Screenshot of the finished Meet landing page solution](./screenshot.jpg)
 
-## Where to find everything
+### Links
 
-Your task is to build out the project to the design file provided. You can download the Figma design file on the platform. You can download the design file on the platform. **Please be sure not to share them with anyone else.** The design download comes with a `README.md` file as well to help you get set up.
+- Solution URL: [Repository](https://github.com/jonghwascript/meet-landing-page.git)
+- Live Site URL: [Live site](https://jonghwascript.github.io/meet-landing-page)
 
-All the required assets for this project are in the `/assets` folder. The assets are already exported for the correct screen size and optimized. Some images are reusable at multiple screen sizes. So if you don't see an image in a specific folder, it will typically be in another folder for that page.
+## My process
 
-The design system in the design file will give you more information about the various colors, fonts, and styles used in this project.
+### Built with
 
-## Using AI coding assistants
+- Semantic HTML5 markup
+- CSS custom properties (color palette and typography presets)
+- CSS Grid (hero layout, per-breakpoint `grid-template-areas`)
+- Flexbox (content media grid, footer layout)
+- Mobile-first workflow (375px / 768px / 1024px breakpoints)
+- CSS Anchor Positioning (experimental) for the section-divider badge
+- BEM naming convention
 
-We've included two files to help you if you're using AI coding assistants (like Claude, GitHub Copilot, Cursor, etc.) while working on this challenge:
+### What I learned
 
-- `AGENTS.md` - Contains detailed instructions for AI assistants on how to help you with this challenge. It's tailored to this challenge's difficulty level, so the AI will provide guidance appropriate to your learning stage—offering more support for beginner challenges and encouraging more independence on advanced ones.
-- `CLAUDE.md` - A pointer file that directs Claude-based tools to the AGENTS.md instructions.
+**`anchor()` only tells you where the anchor line is — it doesn't recenter your box on it.**
 
-**How to use them:** You don't need to do anything! These files are automatically detected by most AI coding tools. The AI will read them and adjust its behavior to be a better learning partner—guiding you toward solutions rather than just giving you the answers.
+I used the new CSS Anchor Positioning API to make a small circular badge straddle the boundary between two sections:
 
-**Note:** These files are designed to help you *learn*, not to do the work for you. The AI is instructed to ask questions, give hints, and explain concepts rather than writing complete solutions.
+```css
+.divider--two {
+  position-anchor: --boundary;
+  position: absolute;
+  top: anchor(top);
+  left: anchor(center);
+  transform: translate(-50%, -79%);
+}
+```
 
-## Building your project
+My first attempt only used `top`/`left` with `anchor()` and the badge ended up hanging *below* the boundary instead of straddling it. The reason: `position: absolute` always positions an element's top-left corner, so `top: anchor(top)` pins the badge's top edge to the anchor's top edge — it doesn't center the badge on that line. `anchor()` is purely a "where is the target line?" lookup; `transform: translate(-50%, ...)` is still required to pull the element back by half its own size and actually center it on that line. The two techniques are a pair, not a substitute for one another.
 
-Feel free to use any workflow that you feel comfortable with. Below is a suggested process, but do not feel like you need to follow these steps:
+**BEM naming is easy to violate without noticing.**
 
-1. Separate the `starter-code` from the rest of this project and rename it to something meaningful for you. Initialize the codebase as a public repository on [GitHub](https://github.com/). Creating a repo will make it easier to share your code with the community if you need help. If you're not sure how to do this, [have a read-through of this Try Git resource](https://try.github.io/). **⚠️ IMPORTANT ⚠️: There are already a couple of `.gitignore` files in this project. Please do not remove them or change the content of the files. If you create a brand new project, please use the `.gitignore` files provided in your new codebase. This is to avoid the accidental upload of the design files to GitHub. With these premium challenges, please be sure not to share the design files in your GitHub repo. Thanks!**
-2. Configure your repository to publish your code to a web address. This will also be useful if you need some help during a challenge as you can share the URL for your project with your repo URL. There are a number of ways to do this, and we provide some recommendations below.
-3. Look through the designs to start planning out how you'll tackle the project. This step is crucial to help you think ahead for CSS classes to create reusable styles.
-4. Before adding any styles, structure your content with HTML. Writing your HTML first can help focus your attention on creating well-structured content.
-5. Write out the base styles for your project, including general content styles, such as `font-family` and `font-size`.
-6. Start adding styles to the top of the page and work down. Only move on to the next section once you're happy you've completed the area you're working on.
+While reviewing the markup I found a few naming issues that are worth remembering for the next project:
 
-## Deploying your project
+- Nesting elements with multiple layers (e.g. `content__text-message` where `content__text` is itself supposed to be an element) blurs which node is actually the "block." BEM wants **flat** naming under one block, not a hierarchy:
+  ```
+  content            (block)
+  ├─ content__media
+  ├─ content__body
+  │   ├─ content__eyebrow
+  │   ├─ content__title
+  │   └─ content__desc
+  ```
+- Modifiers must use `--`, not be tacked on as bare classes. `class="divider one"` looks like an independent class; `class="divider divider--one"` makes the block/modifier relationship explicit both in the markup and in the CSS selector (`.divider--one` vs. `.divider.one`).
+- A class name should describe a role, not the literal text/content it happens to hold right now. `what-is-it` (named after the button's copy) breaks the moment the copy changes; `secondary-action` doesn't. Same idea applied to `footer__sub-title`, which was actually the *only* (i.e. main) heading in the footer — renamed to `footer__title`.
+- Bare classes with no block namespace (`logo`, `download`) aren't wrong by themselves, and mixing a bare class with a BEM element on the same node (`class="footer__download download"`) is a legitimate BEM "mix" technique — but if a bare class is meant to be a reusable component, giving it its own block name (`btn`, `btn--primary`) keeps the system consistent.
 
-As mentioned above, there are many ways to host your project for free. Our recommended hosts are:
+**A horizontal scrollbar can appear from "intentional" bleed, not just a bug.**
 
-- [GitHub Pages](https://pages.github.com/)
-- [Vercel](https://vercel.com/)
-- [Netlify](https://www.netlify.com/)
+On mobile, the hero's circular avatar images are supposed to be cropped by the edge of the viewport — that's the actual design, not an accident. The scrollbar didn't come from a broken layout; it came from the browser correctly reporting `document.scrollWidth > document.clientWidth` once those images (fixed at `208.05px` each, `two + gap` wider than a 375px viewport) pushed the content wider than the screen. The fix isn't to shrink the images to "fit" — that would change the design — it's to clip the overflow instead:
 
-You can host your site using one of these solutions or any of our other trusted providers. [Read more about our recommended and trusted hosts](https://www.frontendmentor.io/guides/hosting-your-solution).
+```css
+html {
+  overflow-x: hidden;
+}
 
-## Create a custom `README.md`
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+```
 
-We strongly recommend overwriting this `README.md` with a custom one. We've provided a template inside the [`README-template.md`](./README-template.md) file in this starter code.
+It needed to be set on **both** `html` and `body`, because which element ends up acting as the page's actual scrolling container differs across browsers/engines — setting it on only one of the two left the scrollbar in place for some browsers.
 
-The template provides a guide for what to add. A custom `README` will help you explain your project and reflect on your learnings. Please feel free to edit our template as much as you like.
+### Continued development
 
-Once you've added your information to the template, delete this file and rename the `README-template.md` file to `README.md`. That will make it show up as your repository's README file.
+- Explore a safe fallback for the Anchor Positioning badge for browsers that don't yet support it (e.g. giving a positioned ancestor a sane default `top`/`left` so the badge doesn't jump to the top of the page instead of straddling the section boundary).
+- Do a BEM naming pass **before** writing markup next time, instead of retrofitting it after the fact.
 
-## Submitting your solution
+### Useful resources
 
-Submit your solution on the platform for the rest of the community to see. Follow our ["Complete guide to submitting solutions"](https://www.frontendmentor.io/guides/how-to-submit-solutions) for tips on how to do this.
+- [MDN - CSS anchor positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - explains the `anchor()` function and `position-anchor`/`anchor-name` and clarified why `transform` is still needed alongside it.
+- [BEM - Block Element Modifier methodology](https://getbem.com/) - the reference I checked against while auditing class names for modifier syntax and flat naming.
 
-Remember, if you're looking for feedback on your solution, be sure to ask questions when submitting it. The more specific and detailed you are with your questions, the higher the chance you'll get valuable feedback from the community.
+### AI Collaboration
 
-**⚠️ IMPORTANT ⚠️: With these premium challenges, please be sure not to upload the design files to GitHub when you're submitting to the platform and sharing it around. If you've created a brand new project, the easiest way to do that is to copy across the `.gitignore` provided in this starter project.**
+This project was reviewed and iterated on with **Claude Code**.
 
-## Sharing your solution
+- Used for: a full code review pass (invalid CSS values like `160xp`/`row-gap: 72` with no unit, hardcoded non-responsive background/hero images despite per-breakpoint assets already existing in `/images`, a BEM naming audit), then applying the agreed fixes directly to the HTML/CSS.
+- It also diagnosed and fixed a mobile-only horizontal scroll issue, and verified the responsive hero-image swap (mobile/tablet/desktop) by spinning up a local static server and taking Playwright screenshots at three viewport widths before calling the change done.
+- What worked well: catching typos and invalid CSS that are easy to miss by eye, and cross-checking existing image assets against what the markup/CSS actually reference.
+- What required back-and-forth: a couple of fixes (like the `overflow-x: hidden` scroll fix, and which selector a border rule should actually target) needed a second round after real-browser testing showed the first attempt wasn't enough.
 
-There are multiple places you can share your solution:
+## Author
 
-1. Share your solution page in the **#finished-projects** channel of the [community](https://www.frontendmentor.io/community). 
-2. Share on [X (formerly Twitter)](https://x.com/frontendmentor) and mention **@frontendmentor**, including the repo and live URLs in your post. We'd love to take a look at what you've built and help share it around.
-3. Share your solution on [LinkedIn](https://www.linkedin.com/company/frontend-mentor/).
-4. Blog about your experience building your project. Writing about your workflow, technical choices, and talking through your code is a brilliant way to reinforce what you've learned. Great platforms to write on are [dev.to](https://dev.to/), [Hashnode](https://hashnode.com/), and [CodeNewbie](https://community.codenewbie.org/).
-
-We provide templates to help you share your solution once you've submitted it on the platform. Please do edit them and include specific questions when you're looking for feedback. 
-
-The more specific you are with your questions the more likely it is that another member of the community will give you feedback.
-
-## Got feedback for us?
-
-We love receiving feedback! We're always looking to improve our challenges and our platform. So if you have anything you'd like to mention, please email hi[at]frontendmentor[dot]io.
-
-**Have fun building!** 🚀
+- Frontend Mentor - [@jonghwascript](https://www.frontendmentor.io/profile/jonghwascript)
