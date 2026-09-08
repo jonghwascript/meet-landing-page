@@ -99,10 +99,43 @@ body {
 
 It needed to be set on **both** `html` and `body`, because which element ends up acting as the page's actual scrolling container differs across browsers/engines — setting it on only one of the two left the scrollbar in place for some browsers.
 
+**Hover states need to account for shared classes, not just the base color.**
+
+The challenge requires visible feedback on interactive elements, so both hero buttons needed a `:hover` state:
+
+```css
+.download:hover {
+  background-color: color-mix(in srgb, var(--Cyan-600) 85%, black);
+}
+```
+
+`color-mix()` darkens the actual brand color instead of a hand-picked hex value, so the hover shade stays correct even if the base color changes later. The catch was the footer's download button, which reuses the `.download` class (`class="footer__download download"`) but should darken from *purple*, not cyan. `.download:hover` and `.footer__download:hover` have equal specificity, so whichever rule comes **later** in the stylesheet wins — without a `.footer__download:hover` rule placed after `.download:hover`, the footer button would flash cyan on hover instead of a darker purple.
+
+**A size that's fixed in pixels will eventually overflow a flexible container.**
+
+The desktop hero images (`hero__left`/`hero__right`) were fixed at `394px × 303px` — the exact resolution of their source PNGs — but they sit inside a `minmax(0, 1fr)` grid track, which actually shrinks to as little as ~224px at 1024px and never grows past ~272px even at the widest supported width. The images were overflowing their track at every desktop size; it just wasn't visible as a scrollbar because the earlier `overflow-x: hidden` fix was quietly clipping it. The real fix is to let the image respond to its track instead of assuming the track will always be wide enough:
+
+```css
+.hero__left,
+.hero__right {
+  width: 100%;
+  max-width: 394px;
+  height: auto;
+  aspect-ratio: 394 / 303;
+}
+```
+
+`width: 100%` fills whatever the track actually resolves to, `max-width` stops it from upscaling past its native resolution, and `aspect-ratio` keeps it from distorting as the width changes.
+
+**An image wrapped in a link needs a name, even if it's "just" a logo.**
+
+`<a href="#"><img src="./logo.svg" alt=""></a>` left the link with no accessible name — a screen reader would announce "link" with no indication of where it goes or what it represents. An empty `alt` is only correct for images that are purely decorative; a logo that identifies the site isn't decorative, so it needs real text (`alt="Meet"`).
+
 ### Continued development
 
 - Explore a safe fallback for the Anchor Positioning badge for browsers that don't yet support it (e.g. giving a positioned ancestor a sane default `top`/`left` so the badge doesn't jump to the top of the page instead of straddling the section boundary).
 - Do a BEM naming pass **before** writing markup next time, instead of retrofitting it after the fact.
+- When sizing an image with a fixed pixel value, check it against its container's actual available space (especially inside a flexible grid track) instead of assuming the container will always be big enough.
 
 ### Useful resources
 
@@ -115,6 +148,7 @@ This project was reviewed and iterated on with **Claude Code**.
 
 - Used for: a full code review pass (invalid CSS values like `160xp`/`row-gap: 72` with no unit, hardcoded non-responsive background/hero images despite per-breakpoint assets already existing in `/images`, a BEM naming audit), then applying the agreed fixes directly to the HTML/CSS.
 - It also diagnosed and fixed a mobile-only horizontal scroll issue, and verified the responsive hero-image swap (mobile/tablet/desktop) by spinning up a local static server and taking Playwright screenshots at three viewport widths before calling the change done.
+- A follow-up review pass (styled as inline PR-style comments) caught three more issues in one go: missing `:hover` states on the buttons (a stated challenge requirement), the desktop hero images silently overflowing their grid track, and the header logo's `alt=""` leaving its link with no accessible name.
 - What worked well: catching typos and invalid CSS that are easy to miss by eye, and cross-checking existing image assets against what the markup/CSS actually reference.
 - What required back-and-forth: a couple of fixes (like the `overflow-x: hidden` scroll fix, and which selector a border rule should actually target) needed a second round after real-browser testing showed the first attempt wasn't enough.
 
