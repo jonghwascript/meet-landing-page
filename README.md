@@ -131,6 +131,22 @@ The desktop hero images (`hero__left`/`hero__right`) were fixed at `394px × 303
 
 `<a href="#"><img src="./logo.svg" alt=""></a>` left the link with no accessible name — a screen reader would announce "link" with no indication of where it goes or what it represents. An empty `alt` is only correct for images that are purely decorative; a logo that identifies the site isn't decorative, so it needs real text (`alt="Meet"`).
 
+**`width: min(X, 100%)` only looks fluid — inside the media query where it lives, `X` is always smaller than the viewport, so it's just a fixed width in disguise.**
+
+`.wrapper` used `width: min(375px, 100%)` at the base, then re-declared `width: min(768px, 100%)` and `width: min(1440px, 100%)` inside the tablet and desktop `@media` blocks. Each override only applies once the viewport is *already* past that breakpoint, so within the block's own active range (376–767px, 769–1023px) the viewport is always wider than the pixel value — `min()` picks the fixed number every time. The result: any window size between two breakpoints renders the *previous* tier's exact design width, centered with dead space on both sides — including the `.footer`'s full-bleed background band, since `.footer` is a child of `.wrapper`.
+
+The fix isn't a `min()` → `max-width` syntax swap (they compute to the identical value); it's giving `.wrapper` a single cap that never shrinks:
+
+```css
+.wrapper {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+```
+
+with no per-breakpoint override left in either media query. `.landing` keeps its own per-tier caps (369px / 680px / 1120px) unchanged, because that one *is* supposed to freeze at each tier's exact design width — the hero grid and image sizes inside it are built for that specific width. The bug was specific to the outer full-bleed wrapper, not the inner content column.
+
 ### Continued development
 
 - Explore a safe fallback for the Anchor Positioning badge for browsers that don't yet support it (e.g. giving a positioned ancestor a sane default `top`/`left` so the badge doesn't jump to the top of the page instead of straddling the section boundary).
@@ -149,6 +165,7 @@ This project was reviewed and iterated on with **Claude Code**.
 - Used for: a full code review pass (invalid CSS values like `160xp`/`row-gap: 72` with no unit, hardcoded non-responsive background/hero images despite per-breakpoint assets already existing in `/images`, a BEM naming audit), then applying the agreed fixes directly to the HTML/CSS.
 - It also diagnosed and fixed a mobile-only horizontal scroll issue, and verified the responsive hero-image swap (mobile/tablet/desktop) by spinning up a local static server and taking Playwright screenshots at three viewport widths before calling the change done.
 - A follow-up review pass (styled as inline PR-style comments) caught three more issues in one go: missing `:hover` states on the buttons (a stated challenge requirement), the desktop hero images silently overflowing their grid track, and the header logo's `alt=""` leaving its link with no accessible name.
+- A later PR-style comment diagnosed `.wrapper`'s `width: min(X, 100%)` re-declared per breakpoint as a fixed-width bug in disguise, and correctly separated it from `.landing`'s per-tier caps, which needed to stay as-is.
 - What worked well: catching typos and invalid CSS that are easy to miss by eye, and cross-checking existing image assets against what the markup/CSS actually reference.
 - What required back-and-forth: a couple of fixes (like the `overflow-x: hidden` scroll fix, and which selector a border rule should actually target) needed a second round after real-browser testing showed the first attempt wasn't enough.
 

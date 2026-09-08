@@ -35,8 +35,9 @@
 }
 
 .wrapper {
-  width: min(375px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
 }
 
 header {
@@ -301,11 +302,6 @@ header {
 
 /* Tablet */
 @media (min-width: 768px) {
-  .wrapper {
-    width: min(768px, 100%);
-    margin: 0 auto;
-  }
-
   .landing {
     width: min(680px, 100%);
   }
@@ -390,11 +386,6 @@ header {
 
 /* desktop */
 @media (min-width: 1024px) {
-  .wrapper {
-    width: min(1440px, 100%);
-    margin: 0 auto;
-  }
-
   .landing {
     width: min(1120px, 100%);
   }
