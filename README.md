@@ -43,7 +43,6 @@ Users should be able to:
 - CSS Grid (hero layout, per-breakpoint `grid-template-areas`)
 - Flexbox (content media grid, footer layout)
 - Mobile-first workflow (375px / 768px / 1024px breakpoints)
-- CSS Anchor Positioning (experimental) for the section-divider badge
 - BEM naming convention
 
 ### What I learned
@@ -147,15 +146,74 @@ The fix isn't a `min()` → `max-width` syntax swap (they compute to the identic
 
 with no per-breakpoint override left in either media query. `.landing` keeps its own per-tier caps (369px / 680px / 1120px) unchanged, because that one *is* supposed to freeze at each tier's exact design width — the hero grid and image sizes inside it are built for that specific width. The bug was specific to the outer full-bleed wrapper, not the inner content column.
 
+**`display: none` doesn't cancel an `<img>`'s network request — but it does for a CSS `background-image`.**
+
+`.hero__left`, `.hero__right`, and `.hero__media` were all real `<img>` elements, one per breakpoint, hidden with `display: none` outside their own tier. The browser fetches an `<img src>` the moment it parses the tag, regardless of CSS — so every visitor downloaded all three images and threw away whichever two didn't apply to their viewport. `.hero__media` also had no `aspect-ratio`, so before it loaded there was no reserved box: the headline and buttons sat higher on the page, then jumped down once the image arrived.
+
+The fix was to drop the `<img>`s for empty, purely-decorative `<div>`s (they already carried `alt=""`, so nothing was lost for screen readers) and move each image into a CSS `background-image`, declared **only inside the media query where it's actually shown**:
+
+```css
+.hero__media {
+  display: none;
+  width: 100%;
+  aspect-ratio: 820 / 303;
+  background-size: cover;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero__media {
+    display: block;
+    background-image: url(../images/tablet/image-hero.png);
+  }
+}
+```
+
+A `background-image` is only fetched once the rule that declares it actually applies *and* the element gets a layout box — so a `display: none` element's background is never requested at all. `.hero__left`/`.hero__right` needed the same treatment split across two ranges (`max-width: 767px` and `min-width: 1024px`, since they're shown at both mobile and desktop but hidden at tablet), rather than one unconditional declaration. Verified with a local static server and Playwright network logs at 375px/900px/1440px: each width now requests exactly the two images it displays, never the other four.
+
+**An unsupported `anchor()` doesn't just fail loudly — it quietly falls back to a broken layout, with no `@supports` guard to catch it.**
+
+The section-2 divider badge used to straddle the content/footer seam with CSS Anchor Positioning:
+
+```css
+.divider--two {
+  position-anchor: --boundary;
+  position: absolute;
+  top: anchor(top);
+  left: anchor(center);
+  transform: translate(-50%, -79%);
+}
+```
+
+On a browser without Anchor Positioning support, `anchor()` isn't a parse error — the declaration is just invalid at compute time, so `top`/`left` fall back to `auto`. The element is still `position: absolute`, so it renders at its static in-flow position instead of at the anchor, and the `transform` (tuned for the anchored position) drags it up and to the left over whatever content happens to be there. `overflow-x: hidden` on `html`/`body` (added earlier for the intentional mobile avatar bleed) hides the horizontal half of that damage, which made it easy to miss.
+
+The replacement needs no anchor lookup at all — pull the footer up over the badge instead of pulling the badge down onto the footer:
+
+```css
+.divider--two {
+  position: relative;
+  z-index: 1;
+  margin-block-start: 4rem;
+}
+
+.footer {
+  margin-block-start: -1.75rem; /* half the 56px circle, so it straddles the seam */
+}
+```
+
+The `z-index` is easy to skip and looks redundant — `.footer` isn't positioned, so shouldn't a positioned `.divider--two` already paint above it? Not here: `.divider--two` and `.footer` aren't siblings (`.divider--two` is inside `.landing`, `.footer` is `.landing`'s sibling), and `position: relative` with `z-index: auto` doesn't create a new stacking context. Without an explicit `z-index`, `.divider--two` stays in the normal in-flow paint order, and `.footer` — coming later in the DOM — paints over it. Giving `.divider--two` a real `z-index` promotes it into its own stacking context, which paints after (above) any non-positioned content regardless of DOM order.
+
+**An orphaned `border-top: 1px solid #000` with no matching design and a same-property override at the next breakpoint is a tell that it was leftover debugging, not intentional.**
+
+`.footer` had `border-top: 1px solid #000`, immediately cancelled by `border-top: none` in the tablet media query — a one-breakpoint-only line with nothing in the design comp to justify it. Deleted both declarations.
+
 ### Continued development
 
-- Explore a safe fallback for the Anchor Positioning badge for browsers that don't yet support it (e.g. giving a positioned ancestor a sane default `top`/`left` so the badge doesn't jump to the top of the page instead of straddling the section boundary).
 - Do a BEM naming pass **before** writing markup next time, instead of retrofitting it after the fact.
 - When sizing an image with a fixed pixel value, check it against its container's actual available space (especially inside a flexible grid track) instead of assuming the container will always be big enough.
 
 ### Useful resources
 
-- [MDN - CSS anchor positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - explains the `anchor()` function and `position-anchor`/`anchor-name` and clarified why `transform` is still needed alongside it.
+- [MDN - CSS anchor positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - explains the `anchor()` function and `position-anchor`/`anchor-name` and clarified why `transform` is still needed alongside it. The section-divider badge no longer uses this (see "What I learned"), but the API itself was still worth understanding.
 - [BEM - Block Element Modifier methodology](https://getbem.com/) - the reference I checked against while auditing class names for modifier syntax and flat naming.
 
 ### AI Collaboration
@@ -166,6 +224,8 @@ This project was reviewed and iterated on with **Claude Code**.
 - It also diagnosed and fixed a mobile-only horizontal scroll issue, and verified the responsive hero-image swap (mobile/tablet/desktop) by spinning up a local static server and taking Playwright screenshots at three viewport widths before calling the change done.
 - A follow-up review pass (styled as inline PR-style comments) caught three more issues in one go: missing `:hover` states on the buttons (a stated challenge requirement), the desktop hero images silently overflowing their grid track, and the header logo's `alt=""` leaving its link with no accessible name.
 - A later PR-style comment diagnosed `.wrapper`'s `width: min(X, 100%)` re-declared per breakpoint as a fixed-width bug in disguise, and correctly separated it from `.landing`'s per-tier caps, which needed to stay as-is.
+- Another comment caught all three hero images being downloaded on every visit regardless of breakpoint, plus a missing `aspect-ratio` causing a layout jump on tablet; after converting them from `<img>` to breakpoint-scoped `background-image` divs, it verified the fix with real network-request logs from a headless browser at three viewport widths instead of just reading the CSS.
+- A final round flagged the Anchor Positioning divider badge as a no-`@supports`-guard progressive-enhancement risk and an orphaned `border-top` with no matching design; replacing the badge with an in-flow negative-margin technique was verified by measuring the actual rendered gap between the divider and the footer in a headless browser (confirming the circle overlaps the seam by exactly half its height) rather than trusting the CSS by inspection alone.
 - What worked well: catching typos and invalid CSS that are easy to miss by eye, and cross-checking existing image assets against what the markup/CSS actually reference.
 - What required back-and-forth: a couple of fixes (like the `overflow-x: hidden` scroll fix, and which selector a border rule should actually target) needed a second round after real-browser testing showed the first attempt wasn't enough.
 
